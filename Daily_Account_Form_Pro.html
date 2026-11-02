@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Daily Account Form — Pro</title>
+<style>
+:root{font-family:Inter,Arial,sans-serif;color:#172033;background:#f3f6fb}*{box-sizing:border-box}body{margin:0}
+header{background:linear-gradient(120deg,#17365d,#176b68);color:white;padding:22px 16px}header h1{margin:0;font-size:1.55rem}header p{margin:8px 0 0;color:#d9e8f2}
+main{max-width:1200px;margin:18px auto;padding:0 14px}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.card,.panel{background:#fff;border-radius:14px;padding:16px;box-shadow:0 3px 14px #0f172a0d}.card small{color:#64748b}.amount{font-size:1.35rem;font-weight:750;margin-top:8px;overflow-wrap:anywhere}
+.grid{display:grid;grid-template-columns:minmax(300px,.9fr) minmax(0,1.6fr);gap:14px}h2{font-size:1.1rem;margin:0 0 14px}
+form{display:grid;grid-template-columns:1fr 1fr;gap:10px}label{font-size:.85rem;color:#475569;display:flex;flex-direction:column;gap:5px}
+input,select,button{font:inherit;border:1px solid #cbd5e1;border-radius:8px;padding:10px;min-width:0;background:white}button{cursor:pointer;border:0;background:#176b4d;color:white;font-weight:700}
+button.secondary{background:#e2e8f0;color:#172033}button.danger{background:#b42318;padding:7px 9px}.wide{grid-column:1/-1}
+.actions,.filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.filters{margin:0 0 12px}.filters>*{flex:1}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:.85rem}th,td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left;white-space:nowrap}th{background:#f8fafc;color:#475569}
+.num{text-align:right}.note{font-size:.82rem;color:#64748b;line-height:1.5}.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}.report-grid .panel{min-width:0}.metric{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #edf0f5}.metric strong{text-align:right}
+#status{min-height:1.2em;color:#176b4d;font-size:.85rem}.empty{text-align:center;padding:22px;color:#64748b}
+@media(max-width:800px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:1fr}.report-grid{grid-template-columns:1fr}}
+@media(max-width:430px){form{grid-template-columns:1fr}.wide{grid-column:auto}header h1{font-size:1.25rem}}
+</style></head><body>
+<header><h1>📒 Daily Account Form Pro</h1><p>Business + Personal • Cash / UPI / Bank • Daily & Monthly Reports</p></header>
+<main>
+<section class="cards">
+<div class="card"><small>Today's Opening Balance</small><div class="amount" id="todayOpening">₹0.00</div></div>
+<div class="card"><small>Today's Income</small><div class="amount" id="todayIncome">₹0.00</div></div>
+<div class="card"><small>Today's Expense</small><div class="amount" id="todayExpense">₹0.00</div></div>
+<div class="card"><small>Today's Closing Balance</small><div class="amount" id="todayClosing">₹0.00</div></div>
+</section>
+<section class="panel">
+<h2>📊 Reports</h2><div class="filters">
+<label>Daily Report Date<input type="date" id="reportDate"></label>
+<label>Monthly Report Month<input type="month" id="reportMonth"></label>
+</div>
+<div class="report-grid">
+<div class="panel"><h2>Daily Summary</h2>
+<div class="metric"><span>Opening Balance</span><strong id="dOpen">₹0.00</strong></div>
+<div class="metric"><span>Total Income</span><strong id="dIncome">₹0.00</strong></div>
+<div class="metric"><span>Total Expense</span><strong id="dExpense">₹0.00</strong></div>
+<div class="metric"><span>Net for Day</span><strong id="dNet">₹0.00</strong></div>
+<div class="metric"><span>Closing Balance</span><strong id="dClose">₹0.00</strong></div></div>
+<div class="panel"><h2>Monthly Summary</h2>
+<div class="metric"><span>Opening Balance</span><strong id="mOpen">₹0.00</strong></div>
+<div class="metric"><span>Total Income</span><strong id="mIncome">₹0.00</strong></div>
+<div class="metric"><span>Total Expense</span><strong id="mExpense">₹0.00</strong></div>
+<div class="metric"><span>Net for Month</span><strong id="mNet">₹0.00</strong></div>
+<div class="metric"><span>Closing Balance</span><strong id="mClose">₹0.00</strong></div></div></div>
+<div class="actions"><button id="exportCsv" type="button">Export Transactions to Excel (CSV)</button><button class="secondary" id="exportReport" type="button">Export Daily + Monthly Report</button><button class="secondary" id="backup" type="button">Backup JSON</button><label class="secondary" style="padding:10px;border-radius:8px;cursor:pointer">Import Backup<input id="importFile" type="file" accept=".json,application/json" hidden></label></div><div id="status"></div>
+</section>
+<section class="grid" style="margin-top:14px">
+<div class="panel"><h2>＋ Add Account Entry</h2>
+<form id="entryForm">
+<label>Date<input type="date" id="date" required></label>
+<label>Entry Type<select id="type"><option>Income</option><option>Expense</option><option>Sales</option><option>Purchase</option><option>Personal Income</option><option>Personal Expense</option></select></label>
+<label>Category<select id="category"><option>Sales</option><option>Purchase</option><option>Salary</option><option>Rent</option><option>Travel</option><option>Food</option><option>Utilities</option><option>Stock</option><option>Personal</option><option>Other</option></select></label>
+<label>Payment Mode<select id="mode"><option>Cash</option><option>UPI</option><option>Bank</option><option>Card</option><option>Other</option></select></label>
+<label class="wide">Description<input id="description" placeholder="Customer payment, shop rent..." required></label>
+<label>Opening Balance (₹)<input id="opening" type="number" min="0" step=".01" value="0" required></label>
+<label>Income / Received (₹)<input id="income" type="number" min="0" step=".01" value="0"></label>
+<label>Expense / Paid (₹)<input id="expense" type="number" min="0" step=".01" value="0"></label>
+<label class="wide">Reference / Notes<input id="notes" placeholder="Optional"></label>
+<div class="wide"><div class="note">Closing Balance = Opening Balance + Income − Expense. For the next entry, the app suggests the last saved closing balance.</div></div>
+<button class="wide" type="submit">Save Transaction</button>
+</form>
+<p class="note">This starter version stores records in this browser on this device. It does not automatically sync between devices. Export regularly and keep a backup.</p></div>
+<div class="panel"><h2>🧾 Transactions</h2>
+<div class="filters"><input type="date" id="filterDate" aria-label="Filter date"><select id="filterType"><option value="">All types</option><option>Income</option><option>Expense</option><option>Sales</option><option>Purchase</option><option>Personal Income</option><option>Personal Expense</option></select><input id="search" placeholder="Search description/category"></div>
+<div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Mode</th><th>Opening</th><th>Income</th><th>Expense</th><th>Closing</th><th></th></tr></thead><tbody id="rows"></tbody></table><div id="empty" class="empty">No transactions yet.</div></div></div>
+</section></main>
+<script>
+const $=id=>document.getElementById(id);const now=new Date();const localDate=new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().slice(0,10);
+$('date').value=localDate;$('reportDate').value=localDate;$('reportMonth').value=localDate.slice(0,7);
+let entries=[];try{entries=JSON.parse(localStorage.getItem('dailyAccountProEntries')||'[]')}catch(e){entries=[]}
+const money=n=>'₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+const save=()=>localStorage.setItem('dailyAccountProEntries',JSON.stringify(entries));
+const sum=list=>list.reduce((a,x)=>({income:a.income+Number(x.income||0),expense:a.expense+Number(x.expense||0)}),{income:0,expense:0});
+function openingForDate(date){const day=entries.filter(x=>x.date===date).sort((a,b)=>a.created-b.created);if(day.length)return Number(day[0].opening||0);const prior=entries.filter(x=>x.date<date).sort((a,b)=>a.date.localeCompare(b.date)||a.created-b.created);if(prior.length){const last=prior[prior.length-1];return Number(last.opening||0)+Number(last.income||0)-Number(last.expense||0)}return 0}
+function report(date){const list=entries.filter(x=>x.date===date);const s=sum(list);const opening=list.length?Number(list.slice().sort((a,b)=>a.created-b.created)[0].opening||0):openingForDate(date);return {opening,income:s.income,expense:s.expense,net:s.income-s.expense,closing:opening+s.income-s.expense}}
+function render(){
+ const today=report(localDate);$('todayOpening').textContent=money(today.opening);$('todayIncome').textContent=money(today.income);$('todayExpense').textContent=money(today.expense);$('todayClosing').textContent=money(today.closing);
+ const d=report($('reportDate').value||localDate);[['dOpen',d.opening],['dIncome',d.income],['dExpense',d.expense],['dNet',d.net],['dClose',d.closing]].forEach(([id,v])=>$(id).textContent=money(v));
+ const month=$('reportMonth').value||localDate.slice(0,7),list=entries.filter(x=>x.date.startsWith(month)),s=sum(list);const dates=list.map(x=>x.date).sort();const mOpen=dates.length?report(dates[0]).opening:openingForDate(month+'-01');const lastDate=dates.length?dates[dates.length-1]:month+'-01';const mClose=mOpen+s.income-s.expense;
+ [['mOpen',mOpen],['mIncome',s.income],['mExpense',s.expense],['mNet',s.income-s.expense],['mClose',mClose]].forEach(([id,v])=>$(id).textContent=money(v));
+ const fd=$('filterDate').value,ft=$('filterType').value,q=$('search').value.toLowerCase();
+ const shown=entries.map((x,i)=>({...x,_i:i})).filter(x=>(!fd||x.date===fd)&&(!ft||x.type===ft)&&(!(x.description+' '+x.category+' '+x.notes).toLowerCase().includes('')||true)).filter(x=>!q||(x.description+' '+x.category+' '+x.notes).toLowerCase().includes(q)).sort((a,b)=>b.date.localeCompare(a.date)||b.created-a.created);
+ $('rows').innerHTML=shown.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.type)}</td><td>${esc(x.description)}</td><td>${esc(x.mode)}</td><td class="num">${money(x.opening)}</td><td class="num">${money(x.income)}</td><td class="num">${money(x.expense)}</td><td class="num">${money(Number(x.opening)+Number(x.income)-Number(x.expense))}</td><td><button class="danger" onclick="removeEntry(${x._i})">Delete</button></td></tr>`).join('');$('empty').style.display=shown.length?'none':'block';
+ const last=entries.slice().sort((a,b)=>a.date.localeCompare(b.date)||a.created-b.created).pop();if(last&&$('opening').dataset.auto!=='false')$('opening').value=Number(last.opening)+Number(last.income)-Number(last.expense);
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+window.removeEntry=i=>{if(confirm('Delete this transaction?')){entries.splice(i,1);save();render()}};
+$('opening').addEventListener('input',()=> $('opening').dataset.auto='false');
+$('date').addEventListener('change',()=>{const v=openingForDate($('date').value);$('opening').value=v;$('opening').dataset.auto='true'});
+$('entryForm').addEventListener('submit',e=>{e.preventDefault();const income=Number($('income').value||0),expense=Number($('expense').value||0),opening=Number($('opening').value||0);if(income<0||expense<0||opening<0||(!income&&!expense)||(income>0&&expense>0)){alert('Enter a non-negative opening balance and either income OR expense amount greater than zero.');return}
+ entries.push({date:$('date').value,type:$('type').value,category:$('category').value,mode:$('mode').value,description:$('description').value.trim(),opening,income,expense,notes:$('notes').value.trim(),created:Date.now()});save();$('description').value='';$('income').value='0';$('expense').value='0';$('notes').value='';$('opening').dataset.auto='true';render();});
+['filterDate','filterType','search','reportDate','reportMonth'].forEach(id=>$(id).addEventListener('input',render));
+function download(name,content,type){const a=document.createElement('a');const u=URL.createObjectURL(new Blob([content],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+function csv(rows){return '\\ufeff'+rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\\r\\n')}
+$('exportCsv').onclick=()=>{const rows=[['Date','Entry Type','Category','Description','Payment Mode','Opening Balance (INR)','Income (INR)','Expense (INR)','Closing Balance (INR)','Reference / Notes'],...entries.map(x=>[x.date,x.type,x.category,x.description,x.mode,x.opening,x.income,x.expense,Number(x.opening)+Number(x.income)-Number(x.expense),x.notes])];download('daily-account-transactions.csv',csv(rows),'text/csv;charset=utf-8;');$('status').textContent='Transactions CSV exported. Open it with Excel.'};
+$('exportReport').onclick=()=>{const d=report($('reportDate').value||localDate),m=$('reportMonth').value||localDate.slice(0,7),list=entries.filter(x=>x.date.startsWith(m)),s=sum(list),dates=list.map(x=>x.date).sort(),op=dates.length?report(dates[0]).opening:openingForDate(m+'-01');const rows=[['Report','Period','Opening Balance','Income','Expense','Net','Closing Balance'],['Daily',$('reportDate').value,d.opening,d.income,d.expense,d.net,d.closing],['Monthly',m,op,s.income,s.expense,s.income-s.expense,op+s.income-s.expense]];download('daily-monthly-report.csv',csv(rows),'text/csv;charset=utf-8;');$('status').textContent='Daily and monthly report exported.'};
+$('backup').onclick=()=>download('daily-account-backup.json',JSON.stringify(entries,null,2),'application/json');
+$('importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!Array.isArray(data))throw Error();if(confirm('Replace current entries with this backup?')){entries=data;save();render();$('status').textContent='Backup imported.'}}catch(err){alert('Invalid backup JSON file.')}e.target.value=''};
+render();
+</script></body></html>
